@@ -65,3 +65,41 @@ export const runScheduler = async (req, res) => {
     });
   }
 };
+
+export const compareAllAlgorithms = async (req, res) => {
+  try {
+    const { tasks, options } = req.body;
+
+    const algorithms = [
+      "FCFS",
+      "SJF_NON_PREEMPTIVE",
+      "SJF_PREEMPTIVE",
+      "PRIORITY",
+      "ROUND_ROBIN"
+    ];
+
+    const comparisonResults = [];
+
+    for (const algo of algorithms) {
+      const scheduler = new SchedulerCore(tasks, algo, options);
+      const result = scheduler.run();
+
+      const turnaround = calculateTurnaroundTime(result.tasks);
+      const waiting = calculateWaitingTime(result.tasks);
+
+      comparisonResults.push({
+        algorithm: algo,
+        averageTurnaroundTime: turnaround.averageTurnaroundTime,
+        averageWaitingTime: waiting.averageWaitingTime
+      });
+    }
+
+    return res.json({
+      success: true,
+      comparison: comparisonResults
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false });
+  }
+};
