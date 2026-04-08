@@ -49,9 +49,17 @@ export const roundRobin = (tasks, timeQuantum = 2) => {
       }
     });
 
-    if (task.remainingTime > 0) {
-      queue.push(task);
-    } else {
+    // First add newly arrived processes
+remaining.forEach(t => {
+  if (t.arrivalTime <= currentTime && !t.added) {
+    queue.push(t);
+    t.added = true;
+  }
+});
+
+if (task.remainingTime > 0) {
+  queue.push(task);
+} else {
       task.completionTime = currentTime;
     }
   }
